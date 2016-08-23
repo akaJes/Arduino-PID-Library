@@ -7,6 +7,13 @@ class PID
 
 
   public:
+  typedef struct {
+	double kp;                  // * (P)roportional Tuning Parameter
+    double ki;                  // * (I)ntegral Tuning Parameter
+    double kd;                  // * (D)erivative Tuning Parameter
+	bool   grow;				// true = + ,false = -
+	unsigned long interval;	// miliseconds
+  } pid_t;
 
   //Constants used in some of the functions below
   #define AUTOMATIC	1
@@ -52,17 +59,16 @@ class PID
 	int GetDirection();					  //
 
   private:
-	void Initialize();
-	
-	double dispKp;				// * we'll hold on to the tuning parameters in user-entered 
-	double dispKi;				//   format for display purposes
-	double dispKd;				//
-    
-	double kp;                  // * (P)roportional Tuning Parameter
-    double ki;                  // * (I)ntegral Tuning Parameter
-    double kd;                  // * (D)erivative Tuning Parameter
+	void _initialize();
 
-	int controllerDirection;
+	bool _initialized;
+	void _keep_range(double*);
+    pid_t _setted_pid;
+	struct {
+	  double min, max;
+	} _output_range;
+
+    pid_t _working_pid;
 
     double *myInput;              // * Pointers to the Input, Output, and Setpoint variables
     double *myOutput;             //   This creates a hard link between the variables and the 
@@ -72,8 +78,6 @@ class PID
 	unsigned long lastTime;
 	double ITerm, lastInput;
 
-	unsigned long SampleTime;
-	double outMin, outMax;
 	bool inAuto;
 };
 #endif
